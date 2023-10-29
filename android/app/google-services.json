@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "412314307824",
+    "project_id": "medware-d05d6",
+    "storage_bucket": "medware-d05d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:412314307824:android:b432c35a6fad5b75b84635",
+        "android_client_info": {
+          "package_name": "com.example.medware"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8BRxz6P1uQCDvnFkOQSFLhVqHy2SCbwY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

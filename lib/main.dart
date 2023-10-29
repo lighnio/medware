@@ -1,10 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medware/components/custom_navigation_bar.dart';
+import 'package:medware/firebase_options.dart';
 import 'package:medware/routes.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -21,6 +28,12 @@ class MyApp extends StatelessWidget {
           ShellRoute(
               routes: routes,
               builder: (context, state, child) {
+                if (FirebaseAuth.instance.currentUser == null) {
+                  return Scaffold(
+                    body: Center(child: Text('No Logged')),
+                  );
+                }
+
                 return Scaffold(
                   appBar: AppBar(
                     title: Text(
