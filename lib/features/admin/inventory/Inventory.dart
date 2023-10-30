@@ -44,45 +44,46 @@ class AdminInventoryState extends State<AdminInventory> {
                 context.push('/admin/inventory/add');
               },
             ),
-            body: StatefulBuilder(
-              builder: (context, setState) => Column(
-                children: [
-                  CustomTextField(_search, 'Busqueda...', hEdgeInset: 5,
-                      onChanged: (value) {
-                    setState(() {
-                      items = snapshot.data!.docs
-                          .map((med) => med.data())
-                          .toList()
-                          .where((med) {
-                        return med['genericName']
-                                .toLowerCase()
-                                .contains(value.toLowerCase()) ||
-                            med['name']
-                                .toLowerCase()
-                                .contains(value.toLowerCase()) ||
-                            med['provider']
-                                .toLowerCase()
-                                .contains(value.toLowerCase()) ||
-                            med['registryName']
-                                .toLowerCase()
-                                .contains(value.toLowerCase());
-                      }).toList();
-                    });
-                  }),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: items.length,
-                      itemBuilder: (context, index) => Container(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Imagen
-                            Container(
-                              width: 150,
-                              height: 150,
-                              child: Expanded(
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: StatefulBuilder(
+                builder: (context, setState) => Column(
+                  children: [
+                    CustomTextField(_search, 'Busqueda...', hEdgeInset: 5,
+                        onChanged: (value) {
+                      setState(() {
+                        items = snapshot.data!.docs
+                            .map((med) => med.data())
+                            .toList()
+                            .where((med) {
+                          return med['genericName']
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()) ||
+                              med['name']
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()) ||
+                              med['provider']
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()) ||
+                              med['registryName']
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase());
+                        }).toList();
+                      });
+                    }),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: items.length,
+                        itemBuilder: (context, index) => Container(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Imagen
+                              Container(
+                                width: 150,
+                                height: 150,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
                                   child: Image.network(
@@ -97,18 +98,17 @@ class AdminInventoryState extends State<AdminInventory> {
                                   }, fit: BoxFit.cover),
                                 ),
                               ),
-                            ),
-                            // Información
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                              child: Column(
+                              // Información
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   // Nombre
                                   Text(
                                     items[index]['genericName'],
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20,
@@ -116,8 +116,10 @@ class AdminInventoryState extends State<AdminInventory> {
                                   ),
 
                                   // Descripción
-                                  Text(items[index]['name']),
-                                  Text(items[index]['provider']),
+                                  Text(items[index]['name'],
+                                      overflow: TextOverflow.ellipsis),
+                                  Text(items[index]['provider'],
+                                      overflow: TextOverflow.ellipsis),
                                   Text(
                                       'En Stock: ${items[index]['stockPerUnit']}',
                                       style: TextStyle(
@@ -131,13 +133,13 @@ class AdminInventoryState extends State<AdminInventory> {
                                       'Expiracion: ${items[0]['expireDate'].toDate().toString().split(" ")[0]}'),
                                 ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
           );

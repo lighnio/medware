@@ -42,6 +42,7 @@ class MyApp extends StatelessWidget {
                   key: _scaffoldKey,
                   drawer: const CustomDrawer(),
                   appBar: AppBar(
+                    backgroundColor: Colors.deepPurpleAccent,
                     title: Text(
                       'MedWare',
                       style: TextStyle(
@@ -55,7 +56,6 @@ class MyApp extends StatelessWidget {
                       },
                       icon: const Icon(Icons.menu),
                     ),
-                    actions: [],
                     centerTitle: true,
                   ),
                   body: child,

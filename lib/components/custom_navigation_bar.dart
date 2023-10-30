@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medware/routes.dart';
@@ -11,8 +13,23 @@ class CustomNavigationBar extends StatefulWidget {
 
 class _CustomNavigationBarState extends State<CustomNavigationBar> {
   int _currentIndex = 0;
+  bool admin = false;
+
+  Future verifyAdmin() async {
+    var user = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.email)
+        .get();
+
+    setState(() {
+      admin = user.data()?['isAdmin'] ?? false;
+    });
+  }
 
   Widget build(BuildContext context) {
+    double txtFactor = MediaQuery.of(context).textScaleFactor;
+    verifyAdmin();
+
     const List<BottomNavigationBarItem> general_items = [
       BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
     ];
@@ -36,15 +53,15 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
     return BottomNavigationBar(
         backgroundColor: Colors.deepPurple,
         currentIndex: _currentIndex,
-        items: 1 == 1 ? admin_nav_items : user_nav_items,
+        items: admin ? admin_nav_items : user_nav_items,
         onTap: (value) {
           setState(() => _currentIndex = value);
-          context.go(paths(1 == 1)[_currentIndex]['path'] as String);
+          context.go(paths(admin)[_currentIndex]['path'] as String);
         },
-        selectedFontSize: 20,
+        selectedFontSize: (15 * txtFactor),
         selectedItemColor: Colors.white,
         type: BottomNavigationBarType.fixed,
-        unselectedFontSize: 14,
+        unselectedFontSize: 13 * txtFactor,
         unselectedItemColor: Colors.white.withOpacity(.60));
   }
 }
