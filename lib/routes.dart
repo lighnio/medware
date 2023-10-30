@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:medware/features/home/presentation/HomeScreen.dart';
+import 'package:medware/features/admin/inventory/Inventory.dart';
+import 'package:medware/features/admin/inventory/presentation/inventory_add.dart';
+import 'package:medware/features/home/HomeScreen.dart';
+import 'package:medware/features/login/presentation/LoginPage.dart';
 import 'package:medware/features/user/requests/presentation/Requests.dart';
 
 final source = [
@@ -19,7 +22,7 @@ final source = [
   // Administrator
   {
     'path': '/admin/inventory',
-    'widget': const Center(child: Text('Inventory')),
+    'widget': const AdminInventory(),
   },
   {
     'path': '/admin/orders',
@@ -29,7 +32,27 @@ final source = [
     'path': '/admin/reports',
     'widget': const Center(child: Text('Reports')),
   },
+
+  // Login Page
+  {
+    'path': '/login',
+    'widget': const LoginPage(),
+  },
+
+  // Admin Utils
+  {
+    'path': '/admin/inventory/add',
+    'widget': InventoryAdd(),
+  },
 ];
+
+List paths(isAdmin) {
+  if (isAdmin) {
+    return [source.elementAt(0), ...source.sublist(2, 5)];
+  }
+
+  return source.sublist(0, 1);
+}
 
 final routes = source
     .map(

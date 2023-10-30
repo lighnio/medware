@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medware/components/custom_navigation_bar.dart';
+import 'package:medware/features/login/presentation/LoginPage.dart';
 import 'package:medware/firebase_options.dart';
 import 'package:medware/routes.dart';
 
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
               builder: (context, state, child) {
                 if (FirebaseAuth.instance.currentUser == null) {
                   return Scaffold(
-                    body: Center(child: Text('No Logged')),
+                    body: LoginPage(),
                   );
                 }
 
@@ -43,12 +44,14 @@ class MyApp extends StatelessWidget {
                           fontFamily: 'Times New Roman',
                           fontWeight: FontWeight.w800),
                     ),
-                    actions: [
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.abc),
-                      ),
-                    ],
+                    leading: IconButton(
+                      onPressed: () {
+                        FirebaseAuth.instance.signOut();
+                        context.go('/login');
+                      },
+                      icon: const Icon(Icons.menu),
+                    ),
+                    actions: [],
                     centerTitle: true,
                   ),
                   body: child,

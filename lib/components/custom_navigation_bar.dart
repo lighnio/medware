@@ -34,12 +34,12 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
     ];
 
     return BottomNavigationBar(
-        backgroundColor: const Color(0xFF6200EE),
+        backgroundColor: Colors.deepPurple,
         currentIndex: _currentIndex,
         items: 1 == 1 ? admin_nav_items : user_nav_items,
         onTap: (value) {
           setState(() => _currentIndex = value);
-          context.go(source[_currentIndex]['path'] as String);
+          context.go(paths(1 == 1)[_currentIndex]['path'] as String);
         },
         selectedFontSize: 20,
         selectedItemColor: Colors.white,
