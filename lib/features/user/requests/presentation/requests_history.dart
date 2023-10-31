@@ -43,14 +43,11 @@ class _RequestsHistoryState extends State<RequestsHistory> {
           padding: EdgeInsets.all(8),
           child: StreamBuilder(
             stream: FirebaseFirestore.instance
-                .collection('users')
-                .doc(FirebaseAuth.instance.currentUser?.email)
                 .collection('requests')
-                .where('isEnded', isEqualTo: true)
-                .orderBy('createdAt', descending: true)
+                .doc(FirebaseAuth.instance.currentUser?.email)
                 .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              if (!snapshot.hasData) {
                 return const Center(
                   child: Text(
                     'Parece que aun no hay un registro...',
@@ -62,18 +59,34 @@ class _RequestsHistoryState extends State<RequestsHistory> {
                   ),
                 );
               }
-              var requests =
-                  snapshot.data!.docs.map((req) => req.data()).toList();
+
+              var requests = snapshot.data
+                  ?.data()?['requests']
+                  .where((med) => med['isEnded'] == true)
+                  .toList();
+
+              if (requests.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'Parece que aun no hay un registro...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 25,
+                        fontFamily: 'Times New Roman',
+                        fontWeight: FontWeight.bold),
+                  ),
+                );
+              }
+
+              requests.sort((a, b) {
+                final DateTime dateTimeA = a['createdAt'].toDate();
+                final DateTime dateTimeB = b['createdAt'].toDate();
+                return dateTimeA.compareTo(dateTimeB);
+              });
 
               return StatefulBuilder(
                 builder: (context, setState) => Column(
                   children: [
-                    // CustomTextField(_search, 'Busqueda...', hEdgeInset: 5,
-                    //     onChanged: (value) {
-                    //   setState(() {
-                    //     print('Searching: "${_search.text}"');
-                    //   });
-                    // }),
                     const SizedBox(height: 10),
                     Expanded(
                       child: ListView.builder(
@@ -98,7 +111,7 @@ class _RequestsHistoryState extends State<RequestsHistory> {
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                const SizedBox(height: 25),
+                                const SizedBox(height: 15),
                                 Text(
                                   requests[index]["status"],
                                   textAlign: TextAlign.center,
@@ -109,7 +122,7 @@ class _RequestsHistoryState extends State<RequestsHistory> {
                                           ? Colors.green
                                           : Colors.red),
                                 ),
-                                const SizedBox(height: 25),
+                                const SizedBox(height: 15),
                                 const Text(
                                   'Medicamentos Solicitados',
                                   style: TextStyle(

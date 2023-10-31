@@ -44,14 +44,11 @@ class _RequestsState extends State<Requests> {
           padding: EdgeInsets.all(8),
           child: StreamBuilder(
             stream: FirebaseFirestore.instance
-                .collection('users')
-                .doc(FirebaseAuth.instance.currentUser?.email)
                 .collection('requests')
-                .where('isEnded', isEqualTo: false)
-                .orderBy('createdAt', descending: true)
+                .doc(FirebaseAuth.instance.currentUser?.email)
                 .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              if (!snapshot.hasData) {
                 return const Center(
                   child: Text(
                     'Parece que no hay pedidos pendientes...',
@@ -63,10 +60,16 @@ class _RequestsState extends State<Requests> {
                   ),
                 );
               }
-              var requests =
-                  snapshot.data!.docs.map((req) => req.data()).toList();
+              var requests = snapshot.data
+                  ?.data()?['requests']
+                  .where((med) => med['isEnded'] == false)
+                  .toList();
 
-              print(requests);
+              requests.sort((a, b) {
+                final DateTime dateTimeA = a['createdAt'].toDate();
+                final DateTime dateTimeB = b['createdAt'].toDate();
+                return dateTimeA.compareTo(dateTimeB);
+              });
 
               return StatefulBuilder(
                 builder: (context, setState) => Column(

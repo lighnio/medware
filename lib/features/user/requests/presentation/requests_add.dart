@@ -139,22 +139,21 @@ class _RequestsAddState extends State<RequestsAdd> {
 
                     Map<String, dynamic> completeObject = {
                       'requestMeds': finalMeds,
-                      'createdAt': FieldValue.serverTimestamp(),
+                      'createdAt': DateTime.now(),
                       'isEnded': false,
-                      'status': 'wait'
+                      'status': 'Pendiente'
                     };
 
-                    print(completeObject);
-
                     await FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(FirebaseAuth.instance.currentUser?.email)
                         .collection('requests')
-                        .add(completeObject);
+                        .doc(FirebaseAuth.instance.currentUser?.email)
+                        .update({
+                      'requests': FieldValue.arrayUnion([completeObject])
+                    });
 
                     setState(() {
+                      medList.clear();
                       context.pop();
-                      finalMeds.clear();
                     });
                   }
                 })
