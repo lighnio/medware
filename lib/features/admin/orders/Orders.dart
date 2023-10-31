@@ -206,20 +206,48 @@ class _AdminOrdersState extends State<AdminOrders> {
                                         );
                                         // print(rawReqs);
 
+                                        print(rawReqs[gLIndex]);
+
                                         rawReqs[gLIndex]['isEnded'] = true;
                                         rawReqs[gLIndex]['status'] = 'Aceptado';
 
+                                        print('========');
+                                        print(rawReqs[gLIndex]);
                                         // await db_usReqs
                                         //     .update({'requests': rawReqs});
 
-                                        print('updated');
+                                        // print('updated');
                                       },
                                       color: Colors.green,
                                       padding: 10,
                                     ),
                                     CustomButton(
                                       'Rechazar',
-                                      () {},
+                                      () async {
+                                        var db_usReqs = FirebaseFirestore
+                                            .instance
+                                            .collection('requests')
+                                            .doc(orders[index]['owner']);
+
+                                        var usReqs = await db_usReqs.get();
+
+                                        List rawReqs =
+                                            usReqs.data()?['requests'] ?? [];
+
+                                        int gLIndex = rawReqs.indexWhere(
+                                          (element) =>
+                                              element['createdAt'].toDate() ==
+                                              orders[index]['createdAt']
+                                                  .toDate(),
+                                        );
+                                        // print(rawReqs);
+
+                                        rawReqs[gLIndex]['isEnded'] = true;
+                                        rawReqs[gLIndex]['status'] = 'Denegado';
+
+                                        await db_usReqs
+                                            .update({'requests': rawReqs});
+                                      },
                                       color: Colors.red,
                                       padding: 10,
                                     ),
