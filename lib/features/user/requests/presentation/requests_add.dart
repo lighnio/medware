@@ -15,7 +15,8 @@ class RequestsAdd extends StatefulWidget {
 class _RequestsAddState extends State<RequestsAdd> {
   TextEditingController _search = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  Set medList = {};
+  Map medList = {};
+  List finalMedList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -41,50 +42,52 @@ class _RequestsAddState extends State<RequestsAdd> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 0, 15),
                     child: ListView.builder(
-                      itemCount: medList.length,
-                      itemBuilder: (context, index) => Padding(
-                        padding: const EdgeInsets.only(bottom: 25),
-                        child: Column(
-                          children: [
-                            Row(
+                        itemCount: medList.length,
+                        itemBuilder: (context, index) {
+                          finalMedList = medList.entries.toList();
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 25),
+                            child: Column(
                               children: [
-                                SizedBox(
-                                  width: 75,
-                                  height: 75,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.network(
-                                        'https://source.unsplash.com/random',
-                                        loadingBuilder:
-                                            (context, child, loadingProgress) {
-                                      if (loadingProgress == null) {
-                                        return child;
-                                      }
-                                      return const Center(
-                                          child: CircularProgressIndicator());
-                                    }, fit: BoxFit.cover),
-                                  ),
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 75,
+                                      height: 75,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.network(
+                                            'https://source.unsplash.com/random',
+                                            loadingBuilder: (context, child,
+                                                loadingProgress) {
+                                          if (loadingProgress == null) {
+                                            return child;
+                                          }
+                                          return const Center(
+                                              child:
+                                                  CircularProgressIndicator());
+                                        }, fit: BoxFit.cover),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 15),
+                                    Text(finalMedList[index].value['name'])
+                                  ],
                                 ),
-                                const SizedBox(width: 15),
-                                Text(medList.elementAt(index)['name'])
+                                Text('ADD, OR DELETE FUNCTION')
                               ],
                             ),
-                            Text('ADD, OR DELETE FUNCTION')
-                          ],
-                        ),
-                      ),
-                    ),
+                          );
+                        }),
                   ),
                 ),
                 CustomButton('Solicitar', () async {
                   setState(() {
-                    print(medList.toSet());
+                    print(finalMedList);
 
                     // await FirebaseFirestore.instance
                     //     .collection('users')
                     //     .doc(FirebaseAuth.instance.currentUser?.email)
                     //     .collection('requests').add(data);
-                    medList.clear();
                     context.pop();
                   });
                 })
@@ -100,7 +103,6 @@ class _RequestsAddState extends State<RequestsAdd> {
               onPressed: () {
                 setState(() {
                   _search.clear();
-                  medList = medList;
                 });
                 _scaffoldKey.currentState?.openEndDrawer();
               },
@@ -173,7 +175,8 @@ class _RequestsAddState extends State<RequestsAdd> {
                       child: ListView.builder(
                         itemCount: items.length,
                         itemBuilder: (context, index) => GestureDetector(
-                          onTap: () => medList.add(items[index]),
+                          onTap: () =>
+                              medList[items[index]['id']] = items[index],
                           child: Container(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
