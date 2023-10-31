@@ -1,15 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:medware/components/custom_buttton.dart';
 
-class AdminOrders extends StatefulWidget {
-  const AdminOrders({super.key});
+class AdminReports extends StatefulWidget {
+  const AdminReports({super.key});
 
   @override
-  State<AdminOrders> createState() => _AdminOrdersState();
+  State<AdminReports> createState() => _AdminReportsState();
 }
 
-class _AdminOrdersState extends State<AdminOrders> {
+class _AdminReportsState extends State<AdminReports> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -17,7 +16,7 @@ class _AdminOrdersState extends State<AdminOrders> {
         appBar: AppBar(
           centerTitle: true,
           title: Text(
-            'Solicitudes en Curso', // overflow: TextOverflow.ellipsis,
+            'Solicitudes Procesadas', // overflow: TextOverflow.ellipsis,
           ),
         ),
         body: Padding(
@@ -53,7 +52,7 @@ class _AdminOrdersState extends State<AdminOrders> {
                   [];
 
               var orders =
-                  tempOrders.where((med) => med['isEnded'] == false).toList();
+                  tempOrders.where((med) => med['isEnded'] == true).toList();
 
               orders.sort((a, b) {
                 final comparacionPorOwner = a['owner'].compareTo(b['owner']);
@@ -102,7 +101,35 @@ class _AdminOrdersState extends State<AdminOrders> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ],
-                                )
+                                ),
+                                Row(
+                                  children: [
+                                    const Text('Procesado: '),
+                                    Text(
+                                      orders[index]["endedAt"]
+                                          .toDate()
+                                          .toString()
+                                          .split(".")[0],
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text('Estado Final: '),
+                                    Text(
+                                      orders[index]["status"],
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          color: orders[index]["status"] ==
+                                                  'Aceptado'
+                                              ? Colors.green
+                                              : Colors.red),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                             subtitle: Column(
@@ -180,87 +207,6 @@ class _AdminOrdersState extends State<AdminOrders> {
                                   ],
                                 ),
                                 const SizedBox(height: 25),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    CustomButton(
-                                      'Aceptar',
-                                      () async {
-                                        var db_usReqs = FirebaseFirestore
-                                            .instance
-                                            .collection('requests')
-                                            .doc(orders[index]['owner']);
-
-                                        var usReqs = await db_usReqs.get();
-
-                                        List rawReqs =
-                                            usReqs.data()?['requests'] ?? [];
-
-                                        int gLIndex = rawReqs.indexWhere(
-                                          (element) =>
-                                              element['createdAt'].toDate() ==
-                                              orders[index]['createdAt']
-                                                  .toDate(),
-                                        );
-                                        // print(rawReqs);
-
-                                        rawReqs[gLIndex]['isEnded'] = true;
-                                        rawReqs[gLIndex]['status'] = 'Aceptado';
-                                        rawReqs[gLIndex]['endedAt'] =
-                                            DateTime.now();
-
-                                        rawReqs[gLIndex]['requestMeds']
-                                            .forEach((med) async {
-                                          await FirebaseFirestore.instance
-                                              .collection('meds')
-                                              .doc(med['id'])
-                                              .update({
-                                            'stockPerUnit':
-                                                FieldValue.increment(
-                                                    -med['quantity'])
-                                          });
-                                        });
-
-                                        await db_usReqs
-                                            .update({'requests': rawReqs});
-                                      },
-                                      color: Colors.green,
-                                      padding: 10,
-                                    ),
-                                    CustomButton(
-                                      'Rechazar',
-                                      () async {
-                                        var db_usReqs = FirebaseFirestore
-                                            .instance
-                                            .collection('requests')
-                                            .doc(orders[index]['owner']);
-
-                                        var usReqs = await db_usReqs.get();
-
-                                        List rawReqs =
-                                            usReqs.data()?['requests'] ?? [];
-
-                                        int gLIndex = rawReqs.indexWhere(
-                                          (element) =>
-                                              element['createdAt'].toDate() ==
-                                              orders[index]['createdAt']
-                                                  .toDate(),
-                                        );
-                                        // print(rawReqs);
-
-                                        rawReqs[gLIndex]['isEnded'] = true;
-                                        rawReqs[gLIndex]['status'] = 'Denegado';
-                                        rawReqs[gLIndex]['endedAt'] =
-                                            DateTime.now();
-
-                                        await db_usReqs
-                                            .update({'requests': rawReqs});
-                                      },
-                                      color: Colors.red,
-                                      padding: 10,
-                                    ),
-                                  ],
-                                ),
                               ],
                             ),
                           ),

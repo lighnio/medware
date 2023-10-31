@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:medware/features/admin/inventory/Inventory.dart';
 import 'package:medware/features/admin/inventory/presentation/inventory_add.dart';
 import 'package:medware/features/admin/orders/Orders.dart';
+import 'package:medware/features/admin/reports/Reports.dart';
 import 'package:medware/features/home/HomeScreen.dart';
 import 'package:medware/features/login/presentation/LoginPage.dart';
 import 'package:medware/features/user/requests/presentation/Requests.dart';
@@ -33,7 +34,7 @@ final source = [
   },
   {
     'path': '/admin/reports',
-    'widget': const Center(child: Text('Reports')),
+    'widget': AdminReports(),
   },
 
   // Login Page
