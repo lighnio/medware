@@ -21,12 +21,6 @@ class _AdminOrdersState extends State<AdminOrders> {
             'Solicitudes en Curso', // overflow: TextOverflow.ellipsis,
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            context.push('/user/requests/add');
-          },
-          child: Icon(Icons.add),
-        ),
         body: Padding(
           padding: EdgeInsets.all(8),
           child: StreamBuilder(
