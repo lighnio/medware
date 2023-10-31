@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 
-Widget CustomButton(String text, function) {
+Widget CustomButton(
+  String text,
+  function, {
+  double padding = 25,
+  Color color = Colors.deepPurple,
+}) {
   return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+    padding: EdgeInsets.symmetric(horizontal: 25.0),
     child: GestureDetector(
       onTap: function,
       child: Container(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(padding),
         decoration: BoxDecoration(
-            color: Colors.deepPurple, borderRadius: BorderRadius.circular(12)),
+            color: color, borderRadius: BorderRadius.circular(12)),
         child: Center(
           child: Text(
             text,

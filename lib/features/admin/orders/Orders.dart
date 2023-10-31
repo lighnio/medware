@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:medware/components/custom_buttton.dart';
 
 class AdminOrders extends StatefulWidget {
   const AdminOrders({super.key});
@@ -39,18 +40,33 @@ class _AdminOrdersState extends State<AdminOrders> {
                   ),
                 );
               }
-              var orders = snapshot.data!.docs.map((req) {
-                var temp = req
-                    .data()['requests']
-                    .map((elem) => {'owner': req.id, ...elem})
-                    .toList();
+              var tempOrders = snapshot.data?.docs
+                      .map((req) {
+                        var temp = req
+                            .data()['requests']
+                            .map((elem) => {'owner': req.id, ...elem})
+                            .toList();
 
-                return temp;
-              }).toList();
+                        return temp;
+                      })
+                      .toList()
+                      .expand((sublist) => sublist)
+                      .toList() ??
+                  [];
 
-              print(orders[0]);
+              var orders =
+                  tempOrders.where((med) => med['isEnded'] == false).toList();
 
-              return Text('');
+              orders.sort((a, b) {
+                final comparacionPorOwner = a['owner'].compareTo(b['owner']);
+                if (comparacionPorOwner != 0) {
+                  return comparacionPorOwner;
+                } else {
+                  final fechaA = a['createdAt'].toDate();
+                  final fechaB = b['createdAt'].toDate();
+                  return fechaA.compareTo(fechaB);
+                }
+              });
 
               return StatefulBuilder(
                 builder: (context, setState) => Column(
@@ -64,12 +80,154 @@ class _AdminOrdersState extends State<AdminOrders> {
                           margin: const EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 10.0),
                           child: ListTile(
-                              title: Row(
-                                children: [
-                                  Text(orders[index]['owner']),
-                                ],
-                              ),
-                              subtitle: Text('Jeje')),
+                            title: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    const Text('Creacion: '),
+                                    Text(
+                                      orders[index]["createdAt"]
+                                          .toDate()
+                                          .toString()
+                                          .split(".")[0],
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text('Solicitado por: '),
+                                    Text(
+                                      orders[index]["owner"].split('@')[0],
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const SizedBox(height: 25),
+                                const Text(
+                                  'Medicamentos Solicitados',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Table(
+                                  border: TableBorder.all(),
+                                  children: [
+                                    // Headers
+                                    const TableRow(
+                                      children: [
+                                        TableCell(
+                                          verticalAlignment:
+                                              TableCellVerticalAlignment.middle,
+                                          child: Text('Nombre',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                        ),
+                                        TableCell(
+                                          verticalAlignment:
+                                              TableCellVerticalAlignment.middle,
+                                          child: Text('Lote',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                        ),
+                                        TableCell(
+                                          verticalAlignment:
+                                              TableCellVerticalAlignment.middle,
+                                          child: Text('Cantidad',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                        ),
+                                      ],
+                                    ),
+
+                                    ...orders[index]['requestMeds'].map((med) {
+                                      return TableRow(
+                                        children: [
+                                          TableCell(
+                                            verticalAlignment:
+                                                TableCellVerticalAlignment
+                                                    .middle,
+                                            child: Text(
+                                                "${med['genericName']}/${med['name']}",
+                                                textAlign: TextAlign.center),
+                                          ),
+                                          TableCell(
+                                            verticalAlignment:
+                                                TableCellVerticalAlignment
+                                                    .middle,
+                                            child: Text("${med['lote']}",
+                                                textAlign: TextAlign.center),
+                                          ),
+                                          TableCell(
+                                            verticalAlignment:
+                                                TableCellVerticalAlignment
+                                                    .middle,
+                                            child: Text(
+                                                "Cantidad: ${med['quantity']}",
+                                                textAlign: TextAlign.center),
+                                          ),
+                                        ],
+                                      );
+                                    }).toList(),
+                                  ],
+                                ),
+                                const SizedBox(height: 25),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CustomButton(
+                                      'Aceptar',
+                                      () async {
+                                        var db_usReqs = FirebaseFirestore
+                                            .instance
+                                            .collection('requests')
+                                            .doc(orders[index]['owner']);
+
+                                        var usReqs = await db_usReqs.get();
+
+                                        List rawReqs =
+                                            usReqs.data()?['requests'] ?? [];
+
+                                        int gLIndex = rawReqs.indexWhere(
+                                          (element) =>
+                                              element['createdAt'].toDate() ==
+                                              orders[index]['createdAt']
+                                                  .toDate(),
+                                        );
+                                        // print(rawReqs);
+
+                                        rawReqs[gLIndex]['isEnded'] = true;
+                                        rawReqs[gLIndex]['status'] = 'Aceptado';
+
+                                        // await db_usReqs
+                                        //     .update({'requests': rawReqs});
+
+                                        print('updated');
+                                      },
+                                      color: Colors.green,
+                                      padding: 10,
+                                    ),
+                                    CustomButton(
+                                      'Rechazar',
+                                      () {},
+                                      color: Colors.red,
+                                      padding: 10,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
