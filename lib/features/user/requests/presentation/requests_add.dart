@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:medware/components/custom_buttton.dart';
 import 'package:medware/components/custom_textfield.dart';
 
 class RequestsAdd extends StatefulWidget {
@@ -72,7 +75,19 @@ class _RequestsAddState extends State<RequestsAdd> {
                       ),
                     ),
                   ),
-                )
+                ),
+                CustomButton('Solicitar', () async {
+                  setState(() {
+                    print(medList.toSet());
+
+                    // await FirebaseFirestore.instance
+                    //     .collection('users')
+                    //     .doc(FirebaseAuth.instance.currentUser?.email)
+                    //     .collection('requests').add(data);
+                    medList.clear();
+                    context.pop();
+                  });
+                })
               ],
             ),
           ),
@@ -85,6 +100,7 @@ class _RequestsAddState extends State<RequestsAdd> {
               onPressed: () {
                 setState(() {
                   _search.clear();
+                  medList = medList;
                 });
                 _scaffoldKey.currentState?.openEndDrawer();
               },
