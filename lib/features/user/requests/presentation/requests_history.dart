@@ -60,10 +60,11 @@ class _RequestsHistoryState extends State<RequestsHistory> {
                 );
               }
 
-              var requests = snapshot.data
-                  ?.data()?['requests']
-                  .where((med) => med['isEnded'] == true)
-                  .toList();
+              List requests = snapshot.data
+                      ?.data()?['requests']
+                      .where((med) => med['isEnded'] == true)
+                      .toList() ??
+                  [];
 
               if (requests.isEmpty) {
                 return const Center(

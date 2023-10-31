@@ -60,16 +60,30 @@ class _RequestsState extends State<Requests> {
                   ),
                 );
               }
-              var requests = snapshot.data
-                  ?.data()?['requests']
-                  .where((med) => med['isEnded'] == false)
-                  .toList();
+              List requests = snapshot.data
+                      ?.data()?['requests']
+                      .where((med) => med['isEnded'] == false)
+                      .toList() ??
+                  [];
 
               requests.sort((a, b) {
                 final DateTime dateTimeA = a['createdAt'].toDate();
                 final DateTime dateTimeB = b['createdAt'].toDate();
                 return dateTimeA.compareTo(dateTimeB);
               });
+
+              if (requests.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'Parece que no hay pedidos pendientes...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 25,
+                        fontFamily: 'Times New Roman',
+                        fontWeight: FontWeight.bold),
+                  ),
+                );
+              }
 
               return StatefulBuilder(
                 builder: (context, setState) => Column(

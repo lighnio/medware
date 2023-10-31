@@ -24,10 +24,8 @@ class _AdminOrdersState extends State<AdminOrders> {
         body: Padding(
           padding: EdgeInsets.all(8),
           child: StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collectionGroup('users')
-                .get()
-                .asStream(),
+            stream:
+                FirebaseFirestore.instance.collection('requests').snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return const Center(
@@ -41,135 +39,37 @@ class _AdminOrdersState extends State<AdminOrders> {
                   ),
                 );
               }
-              var requests =
-                  snapshot.data!.docs.map((req) => req.data()).toList();
+              var orders = snapshot.data!.docs.map((req) {
+                var temp = req
+                    .data()['requests']
+                    .map((elem) => {'owner': req.id, ...elem})
+                    .toList();
 
-              return Center(
-                child: Text('Hello'),
-              );
+                return temp;
+              }).toList();
+
+              print(orders[0]);
+
+              return Text('');
 
               return StatefulBuilder(
                 builder: (context, setState) => Column(
                   children: [
-                    // CustomTextField(_search, 'Busqueda...', hEdgeInset: 5,
-                    //     onChanged: (value) {
-                    //   setState(() {
-                    //     print('Searching: "${_search.text}"');
-                    //   });
-                    // }),
                     const SizedBox(height: 10),
                     Expanded(
                       child: ListView.builder(
-                        itemCount: requests.length,
+                        itemCount: orders.length,
                         itemBuilder: (context, index) => Card(
                           elevation: 2.0,
                           margin: const EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 10.0),
                           child: ListTile(
-                            title: Row(
-                              children: [
-                                const Text('Solicitado: '),
-                                Text(
-                                  requests[index]["createdAt"]
-                                      .toDate()
-                                      .toString()
-                                      .split(".")[0],
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Text('Por: '),
-                                    Text(
-                                      requests[index]["createdAt"]
-                                          .toDate()
-                                          .toString()
-                                          .split(".")[0],
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 25),
-                                const Text(
-                                  'Medicamentos Solicitados',
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Table(
-                                  border: TableBorder.all(),
-                                  children: [
-                                    // Headers
-                                    const TableRow(
-                                      children: [
-                                        TableCell(
-                                          verticalAlignment:
-                                              TableCellVerticalAlignment.middle,
-                                          child: Text('Nombre',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                        TableCell(
-                                          verticalAlignment:
-                                              TableCellVerticalAlignment.middle,
-                                          child: Text('Lote',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                        TableCell(
-                                          verticalAlignment:
-                                              TableCellVerticalAlignment.middle,
-                                          child: Text('Cantidad',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                      ],
-                                    ),
-
-                                    // Filas de datos
-                                    ...requests[index]['requestMeds']
-                                        .map((med) {
-                                      return TableRow(
-                                        children: [
-                                          TableCell(
-                                            verticalAlignment:
-                                                TableCellVerticalAlignment
-                                                    .middle,
-                                            child: Text(
-                                                "${med['genericName']}/${med['name']}",
-                                                textAlign: TextAlign.center),
-                                          ),
-                                          TableCell(
-                                            verticalAlignment:
-                                                TableCellVerticalAlignment
-                                                    .middle,
-                                            child: Text("${med['lote']}",
-                                                textAlign: TextAlign.center),
-                                          ),
-                                          TableCell(
-                                            verticalAlignment:
-                                                TableCellVerticalAlignment
-                                                    .middle,
-                                            child: Text(
-                                                "Cantidad: ${med['quantity']}",
-                                                textAlign: TextAlign.center),
-                                          ),
-                                        ],
-                                      );
-                                    }).toList(),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
+                              title: Row(
+                                children: [
+                                  Text(orders[index]['owner']),
+                                ],
+                              ),
+                              subtitle: Text('Jeje')),
                         ),
                       ),
                     ),
