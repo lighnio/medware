@@ -32,11 +32,6 @@ class AdminInventoryState extends State<AdminInventory> {
 
           List items = snapshot.data!.docs.map((med) => med.data()).toList();
 
-          // Filtra la lista de medicamentos según el texto del filtro
-          items = items
-              .where((med) => med['name'].contains(_searchFilter.value))
-              .toList();
-
           return Scaffold(
             floatingActionButton: FloatingActionButton(
               child: Icon(Icons.add),
@@ -78,10 +73,10 @@ class AdminInventoryState extends State<AdminInventory> {
                         itemBuilder: (context, index) => Container(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               // Imagen
-                              Container(
+                              SizedBox(
                                 width: 150,
                                 height: 150,
                                 child: ClipRRect(
@@ -93,7 +88,7 @@ class AdminInventoryState extends State<AdminInventory> {
                                     if (loadingProgress == null) {
                                       return child;
                                     }
-                                    return Center(
+                                    return const Center(
                                         child: CircularProgressIndicator());
                                   }, fit: BoxFit.cover),
                                 ),

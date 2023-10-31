@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medware/features/admin/inventory/Inventory.dart';
 import 'package:medware/features/admin/inventory/presentation/inventory_add.dart';
+import 'package:medware/features/admin/orders/Orders.dart';
 import 'package:medware/features/home/HomeScreen.dart';
 import 'package:medware/features/login/presentation/LoginPage.dart';
 import 'package:medware/features/user/requests/presentation/Requests.dart';
+import 'package:medware/features/user/requests/presentation/requests_add.dart';
+import 'package:medware/features/user/requests/presentation/requests_history.dart';
 
 final source = [
   // Base
@@ -26,7 +29,7 @@ final source = [
   },
   {
     'path': '/admin/orders',
-    'widget': const Center(child: Text('Orders')),
+    'widget': const AdminOrders(),
   },
   {
     'path': '/admin/reports',
@@ -44,6 +47,16 @@ final source = [
     'path': '/admin/inventory/add',
     'widget': InventoryAdd(),
   },
+
+  // User Utils
+  {
+    'path': '/user/requests/add',
+    'widget': RequestsAdd(),
+  },
+  {
+    'path': '/user/requests/history',
+    'widget': RequestsHistory(),
+  },
 ];
 
 List paths(isAdmin) {
@@ -51,7 +64,7 @@ List paths(isAdmin) {
     return [source.elementAt(0), ...source.sublist(2, 5)];
   }
 
-  return source.sublist(0, 1);
+  return source.sublist(0, 2);
 }
 
 final routes = source
