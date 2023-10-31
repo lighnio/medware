@@ -16,7 +16,6 @@ class _RequestsAddState extends State<RequestsAdd> {
   TextEditingController _search = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Map medList = {};
-  List finalMedList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -120,15 +119,39 @@ class _RequestsAddState extends State<RequestsAdd> {
                   ),
                 ),
                 CustomButton('Solicitar', () async {
-                  setState(() {
-                    print(finalMedList);
+                  if (medList.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            'No pueden haber solicitudes sin medicamentos...'),
+                      ),
+                    );
+                  } else {
+                    List finalMeds = medList.entries.map((e) {
+                      return {
+                        'genericName': e.value['genericName'],
+                        'id': e.value['id'],
+                        'lote': e.value['lote'],
+                        'name': e.value['name'],
+                        'quantity': e.value['quantity'],
+                      };
+                    }).toList();
 
-                    // await FirebaseFirestore.instance
-                    //     .collection('users')
-                    //     .doc(FirebaseAuth.instance.currentUser?.email)
-                    //     .collection('requests').add(data);
-                    context.pop();
-                  });
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(FirebaseAuth.instance.currentUser?.email)
+                        .collection('requests')
+                        .add({
+                      'requestMeds': finalMeds,
+                      'createdAt': FieldValue.serverTimestamp(),
+                      'isEnded': false,
+                      'status': 'wait'
+                    });
+                    setState(() {
+                      context.pop();
+                      finalMeds.clear();
+                    });
+                  }
                 })
               ],
             ),
