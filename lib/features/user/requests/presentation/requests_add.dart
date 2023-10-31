@@ -44,7 +44,13 @@ class _RequestsAddState extends State<RequestsAdd> {
                     child: ListView.builder(
                         itemCount: medList.length,
                         itemBuilder: (context, index) {
-                          finalMedList = medList.entries.toList();
+                          List medsKeys =
+                              medList.entries.map((e) => e.key).toList();
+
+                          if (medList[medsKeys[index]]['quantity'] == null) {
+                            medList[medsKeys[index]]['quantity'] = 1;
+                          }
+
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 25),
                             child: Column(
@@ -70,10 +76,43 @@ class _RequestsAddState extends State<RequestsAdd> {
                                       ),
                                     ),
                                     const SizedBox(width: 15),
-                                    Text(finalMedList[index].value['name'])
+                                    Text(medList[medsKeys[index]]['name'])
                                   ],
                                 ),
-                                Text('ADD, OR DELETE FUNCTION')
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.remove),
+                                      onPressed: () {
+                                        if (medList[medsKeys[index]]
+                                                ['quantity'] >
+                                            1) {
+                                          setState(() {
+                                            medList[medsKeys[index]]
+                                                ['quantity']--;
+                                          });
+                                        } else {
+                                          setState(() {
+                                            medList.remove(medsKeys[index]);
+                                          });
+                                        }
+                                      },
+                                    ),
+                                    Text(
+                                        '${medList[medsKeys[index]]["quantity"]}',
+                                        style: TextStyle(fontSize: 18)),
+                                    IconButton(
+                                      icon: Icon(Icons.add),
+                                      onPressed: () {
+                                        setState(() {
+                                          medList[medsKeys[index]]
+                                              ['quantity']++;
+                                        });
+                                      },
+                                    )
+                                  ],
+                                )
                               ],
                             ),
                           );
@@ -175,8 +214,11 @@ class _RequestsAddState extends State<RequestsAdd> {
                       child: ListView.builder(
                         itemCount: items.length,
                         itemBuilder: (context, index) => GestureDetector(
-                          onTap: () =>
-                              medList[items[index]['id']] = items[index],
+                          onTap: () {
+                            if (medList[items[index]['id']] == null) {
+                              medList[items[index]['id']] = items[index];
+                            }
+                          },
                           child: Container(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
