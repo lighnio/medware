@@ -131,22 +131,27 @@ class _RequestsAddState extends State<RequestsAdd> {
                       return {
                         'genericName': e.value['genericName'],
                         'id': e.value['id'],
-                        'lote': e.value['lote'],
+                        'lote': e.value['loteNumber'],
                         'name': e.value['name'],
                         'quantity': e.value['quantity'],
                       };
                     }).toList();
 
-                    await FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(FirebaseAuth.instance.currentUser?.email)
-                        .collection('requests')
-                        .add({
+                    Map<String, dynamic> completeObject = {
                       'requestMeds': finalMeds,
                       'createdAt': FieldValue.serverTimestamp(),
                       'isEnded': false,
                       'status': 'wait'
-                    });
+                    };
+
+                    print(completeObject);
+
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(FirebaseAuth.instance.currentUser?.email)
+                        .collection('requests')
+                        .add(completeObject);
+
                     setState(() {
                       context.pop();
                       finalMeds.clear();
