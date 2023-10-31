@@ -66,6 +66,19 @@ class _AdminOrdersState extends State<AdminOrders> {
                 }
               });
 
+              if (orders.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'Parece que no hay pedidos pendientes...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 25,
+                        fontFamily: 'Times New Roman',
+                        fontWeight: FontWeight.bold),
+                  ),
+                );
+              }
+
               return StatefulBuilder(
                 builder: (context, setState) => Column(
                   children: [

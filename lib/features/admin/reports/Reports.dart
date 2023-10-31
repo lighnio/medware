@@ -59,8 +59,8 @@ class _AdminReportsState extends State<AdminReports> {
                 if (comparacionPorOwner != 0) {
                   return comparacionPorOwner;
                 } else {
-                  final fechaA = a['createdAt'].toDate();
-                  final fechaB = b['createdAt'].toDate();
+                  final fechaA = b['createdAt'].toDate();
+                  final fechaB = a['createdAt'].toDate();
                   return fechaA.compareTo(fechaB);
                 }
               });
